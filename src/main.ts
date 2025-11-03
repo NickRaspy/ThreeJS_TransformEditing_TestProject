@@ -1,17 +1,17 @@
 import * as THREE from 'three';
 import {ObjectsManager} from './objects/objectsManager'
-import { UIManager } from './ui/uiManager';
+import { ObjectUIManager } from './ui/objectUIManager';
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let cube: THREE.Mesh;
 let objectsManager: ObjectsManager;
-let uiManager: UIManager;
+let uiManager: ObjectUIManager;
 
 function init(): void {
     objectsManager = new ObjectsManager();
-    uiManager = new UIManager();
+    uiManager = new ObjectUIManager();
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x222222); 
