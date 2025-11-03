@@ -3,20 +3,36 @@ import { Transform } from './transform';
 
 export abstract class GameObject{
     abstract mesh : THREE.Mesh;
-    abstract name : string;
+    abstract readonly name : string;
     transform = new Transform();
 
+    get uuid(){
+        return this.mesh.uuid;
+    }
+
     constructor(){
-        this.transform.onPositionChanged((position) => {
+        this.transform.setOnPositionChanged((position) => {
             this.mesh.position.copy(position);
         });
-        
-        this.transform.onRotationChanged((rotation) => {
+
+        this.transform.setOnRotationChanged((rotation) => {
             this.mesh.quaternion.copy(rotation);
         });
-        
-        this.transform.onScaleChanged((scale) => {
+
+        this.transform.setOnScaleChanged((scale) => {
             this.mesh.scale.copy(scale);
         });
+    }
+
+    dispose():void{
+        this.transform.dispose();
+
+        this.mesh.geometry.dispose();
+        if (this.mesh.material) {
+            if (Array.isArray(this.mesh.material)) 
+                this.mesh.material.forEach(mat => mat.dispose());
+            else
+                this.mesh.material.dispose();
+        }
     }
 }

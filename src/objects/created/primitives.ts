@@ -1,5 +1,5 @@
-import { RegisterObject } from "./objectRegistry";
-import { GameObject } from "./gameObject";
+import { RegisterObject } from "../objectRegistry";
+import { GameObject } from "../gameObject";
 import * as THREE from 'three';
 
 @RegisterObject('box')

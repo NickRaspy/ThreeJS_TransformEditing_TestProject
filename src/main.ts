@@ -1,11 +1,18 @@
 import * as THREE from 'three';
+import {ObjectsManager} from './objects/objectsManager'
+import { UIManager } from './ui/uiManager';
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let cube: THREE.Mesh;
+let objectsManager: ObjectsManager;
+let uiManager: UIManager;
 
 function init(): void {
+    objectsManager = new ObjectsManager();
+    uiManager = new UIManager();
+
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x222222); 
 
@@ -20,17 +27,14 @@ function init(): void {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const material: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({ 
-        color: 0x00ff00, 
-        wireframe: false 
-    });
-    
-    cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    camera.position.z = 10;
 
-    camera.position.z = 5;
+    const test = objectsManager.instantiate('box');
 
+    scene.add(test.mesh);
+    uiManager.addObject(test.uuid, test.name);
+
+    test.transform.setPosition(5, 0, 0);
     animate();
 }
 
@@ -38,9 +42,6 @@ function init(): void {
 function animate(): void {
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    
     renderer.render(scene, camera);
 }
 

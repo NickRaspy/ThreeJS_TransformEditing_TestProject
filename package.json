@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rd /s /q dist && tsc && node fix-imports.js",
     "dev": "tsc --watch",
     "start": "npm run build && live-server"
   },
