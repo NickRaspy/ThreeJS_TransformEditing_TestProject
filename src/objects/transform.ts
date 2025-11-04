@@ -10,6 +10,7 @@ export class Transform {
 
     get position(): THREE.Vector3 { return this._position; }
     get rotation(): THREE.Quaternion { return this._rotation; }
+    get eulerRotation(): THREE.Euler { return new THREE.Euler().setFromQuaternion(this._rotation); }
     get scale(): THREE.Vector3 { return this._scale; }
 
     set position(value: THREE.Vector3) {
@@ -40,8 +41,11 @@ export class Transform {
         }
     }
 
-    setRotation(x: number, y: number, z: number, w: number): void {
-        this._rotation.set(x, y, z, w);
+    setRotation(x: number, y: number, z: number): void {
+        const euler = new THREE.Euler(x, y, z);
+
+        this._rotation.setFromEuler(euler);
+
         if (this.onRotationChanged) {
             this.onRotationChanged(this._rotation);
         }

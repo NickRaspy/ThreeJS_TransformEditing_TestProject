@@ -6,6 +6,10 @@ import "./created/objectsCollection";
 export class ObjectsManager{
     private objectStorage: ObjectStorage = new ObjectStorage();
 
+    constructor(objectStorage: ObjectStorage){
+        this.objectStorage = objectStorage;
+    }
+
     instantiate(objectType: string): GameObject{
         const newObject = Factory.createObject(objectType);
         this.objectStorage.addObject(newObject);

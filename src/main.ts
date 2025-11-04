@@ -1,17 +1,20 @@
 import * as THREE from 'three';
 import {ObjectsManager} from './objects/objectsManager'
 import { ObjectUIManager } from './ui/objectUIManager';
+import { ObjectStorage } from './objects/objectsStorage';
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let cube: THREE.Mesh;
+let objectStorage: ObjectStorage;
 let objectsManager: ObjectsManager;
 let uiManager: ObjectUIManager;
 
 function init(): void {
-    objectsManager = new ObjectsManager();
-    uiManager = new ObjectUIManager();
+    objectStorage = new ObjectStorage();
+    objectsManager = new ObjectsManager(objectStorage);
+    uiManager = new ObjectUIManager(objectStorage);
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x222222); 
@@ -32,7 +35,7 @@ function init(): void {
     const test = objectsManager.instantiate('box');
 
     scene.add(test.mesh);
-    uiManager.addObject(test.uuid, test.name);
+    uiManager.addObject(test.uuid);
 
     test.transform.setPosition(5, 0, 0);
     animate();
