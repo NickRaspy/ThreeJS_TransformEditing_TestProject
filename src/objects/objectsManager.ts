@@ -4,19 +4,19 @@ import { ObjectStorage} from "./objectsStorage"
 import "./created/objectsCollection";
 
 export class ObjectsManager{
-    private objectStorage: ObjectStorage = new ObjectStorage();
+    private _objectStorage: ObjectStorage = new ObjectStorage();
 
-    constructor(objectStorage: ObjectStorage){
-        this.objectStorage = objectStorage;
+    get objectStorage(): ObjectStorage {
+        return this._objectStorage;
     }
 
     instantiate(objectType: string): GameObject{
         const newObject = Factory.createObject(objectType);
-        this.objectStorage.addObject(newObject);
+        this._objectStorage.addObject(newObject);
         return newObject;
     }
 
     destroy(uuid: string){
-        this.objectStorage.removeObject(uuid);
+        this._objectStorage.removeObject(uuid);
     }
 }

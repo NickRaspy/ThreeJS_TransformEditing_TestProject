@@ -14,12 +14,18 @@
     </script>
 </head>
 <body>
-    <aside id="side-menu">
+    <aside class="side-menu">
+        <div id="create-object">
+            <select>
+                <option value='' disabled selected style="display: none;">Select Game Object</option>
+            </select>
+            <button >Create Game Object</button>
+        </div>
         <ul id="objects-list">
         </ul>
     </aside>
-    <div id="editBox">
-        <h3 id="objectName">Game Object</h3>
+    <div id="edit-box">
+        <h3 id="object-name">Game Object</h3>
         <div class="property-group">
             <label>Position</label>
             <div class="vector-inputs" valueType="position">

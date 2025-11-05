@@ -1,50 +1,46 @@
 import { GameObject } from "../objects/gameObject";
-import { ObjectStorage } from "../objects/objectsStorage";
+import { ObjectsManager } from "../objects/objectsManager";
+import { GameObjectCreateMenu } from "./gameObjectCreateMenu";
+import { GameObjectList } from "./gameObjectList";
 import { GameObjectValueEditor } from "./gameObjectValueEditor";
 
 export class ObjectUIManager{
-    private objectStorage : ObjectStorage;
+    private objectsManager : ObjectsManager;
+
+    private gameObjectList: GameObjectList = new GameObjectList();
 
     private gameObjectValueEditor: GameObjectValueEditor = new GameObjectValueEditor();
 
-    private HTMLObjectList: HTMLElement | undefined;
-
-    constructor(objectStorage: ObjectStorage){
-        this.objectStorage = objectStorage;
-
-        const element = document.getElementById('objects-list');
-
-        if(element) this.HTMLObjectList = element;
-        else console.error("object-list not found!");
-    }
-
-    addObject(uuid: string) : void{
-        if(this.HTMLObjectList){
-            const currentGameObject = this.objectStorage.getObject(uuid);
-
-            if(!currentGameObject) return;
-
-            const li = document.createElement('li');
-            const name = currentGameObject.name;
-            li.textContent = name ? name : "Game Object";
-            li.id = 'object-item';
-            li.setAttribute('uuid', uuid);
-            this.HTMLObjectList.appendChild(li);
-
-            li.addEventListener('click', () => this.gameObjectValueEditor.setCurrentTransform(currentGameObject.name, currentGameObject.transform));
+    private gameObjectCreateMenu: GameObjectCreateMenu = new GameObjectCreateMenu((value) =>{
+        if(value.length === 0) return;
+        try{
+            this.objectsManager.instantiate(value);
         }
+        catch(e){
+            console.error(e);
+        }
+    });
+
+    constructor(objectsManager: ObjectsManager){
+        this.objectsManager = objectsManager;
+
+        objectsManager.objectStorage.onObjectAdded((gameObject) =>{
+            this.addObject(gameObject);
+        });
+        objectsManager.objectStorage.onObjectRemoved((gameObject) =>{
+            this.removeObject(gameObject.uuid);
+        });
     }
 
-    removeObject(uuid: string): void{
-        const removable = this.HTMLObjectList?.querySelector(`[uuid="${uuid}"]`);
+    addObject(gameObject: GameObject) : void{
+        this.gameObjectList.add(gameObject.uuid, gameObject.name, () => this.gameObjectValueEditor.setCurrentTransform(gameObject.name, gameObject.transform));
+    }
 
-        if(removable) removable.remove();
+    removeObject(uuid: string): void {
+        this.gameObjectList.remove(uuid);
     }
 
     renameObject(uuid: string, newName: string): void{
-        const element = this.HTMLObjectList?.querySelector(`[uuid="${uuid}"]`);
-
-        if(element) element.textContent = newName;
+        this.gameObjectList.rename(uuid, newName);
     }
-
 }
