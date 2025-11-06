@@ -13,14 +13,11 @@ export class SceneManager {
 
     constructor(objectsManager: ObjectsManager){
         this.objectsManager = objectsManager;
+
         objectsManager.objectStorage.onObjectAdded((gameObject) => {
             this.scene.add(gameObject.mesh);
-            this.resourceTracker.track(gameObject.mesh.geometry);
-            this.resourceTracker.track(gameObject.mesh.material);
         });
         objectsManager.objectStorage.onObjectRemoved((gameObject) => {
-            this.resourceTracker.untrack(gameObject.mesh.geometry);
-            this.resourceTracker.untrack(gameObject.mesh.material);
             this.scene.remove(gameObject.mesh);
         });
 
@@ -48,7 +45,7 @@ export class SceneManager {
     }
 
     dispose(): void{
-        this.resourceTracker.dispose();
+        this.renderer.dispose();
     }
     onWindowResize(): void {
         if (this.camera && this.renderer){

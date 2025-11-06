@@ -13,6 +13,7 @@ export class ObjectUIManager{
 
     private gameObjectCreateMenu: GameObjectCreateMenu = new GameObjectCreateMenu((value) =>{
         if(value.length === 0) return;
+        
         try{
             this.objectsManager.instantiate(value);
         }
@@ -42,5 +43,11 @@ export class ObjectUIManager{
 
     renameObject(uuid: string, newName: string): void{
         this.gameObjectList.rename(uuid, newName);
+    }
+
+    dispose(): void{
+        this.gameObjectList.dispose();
+        this.gameObjectValueEditor.dispose();
+        this.gameObjectCreateMenu.dispose();
     }
 }

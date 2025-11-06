@@ -1,0 +1,1 @@
+export const DEFAULT_GAME_OBJECT_NAME : string = 'Game Object';

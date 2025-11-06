@@ -15,6 +15,8 @@ function init(): void {
     window.addEventListener('resize', sceneManager.onWindowResize, false);
     window.addEventListener('beforeunload', () =>{
         sceneManager.dispose();
+        objectsManager.dispose();
+        uiManager.dispose();
     });
 
     animate();

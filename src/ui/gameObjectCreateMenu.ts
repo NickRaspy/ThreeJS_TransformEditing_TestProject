@@ -7,6 +7,8 @@ export class GameObjectCreateMenu{
     private gameObjectSelect : HTMLSelectElement | undefined;
     private gameObjectCreateButton : HTMLButtonElement | undefined;
 
+    private onButtonClick?: () => void;
+
     constructor(onButtonClick: (value: string) => void){
         const element = document.getElementById(CREATOR_OBJECT_ID);
 
@@ -17,20 +19,25 @@ export class GameObjectCreateMenu{
 
         this.createGameObjectMenu = element;
 
-        const select = element.querySelector('select');
+        const select = this.createGameObjectMenu.querySelector('select');
         if(select) this.gameObjectSelect = select;
 
-        const button = element.querySelector('button');
+        this.onButtonClick = () => onButtonClick(select?.value ?? '');
+
+        const button = this.createGameObjectMenu.querySelector('button');
         if(button) {
             this.gameObjectCreateButton = button;
-            button.addEventListener('click', () => onButtonClick(select?.value ?? ''));
+            button.addEventListener('click', () => {
+                this.onButtonClick?.();
+            });
         }
 
         this.fillSelect();
     }
 
     private fillSelect() : void{
-        console.log(`obj reg amount: ${ObjectRegistry.availableObjects.length}`)
+        if(!this.gameObjectSelect) return;
+
         ObjectRegistry.availableObjects.forEach(obj => {
             const option = document.createElement('option');
             option.value = obj;
@@ -38,5 +45,25 @@ export class GameObjectCreateMenu{
 
             this.gameObjectSelect?.appendChild(option);
         });
+    }
+
+    private clearSelect() : void{
+        if(!this.gameObjectSelect) return;
+
+        const childs = this.gameObjectSelect?.querySelectorAll('option');
+        if (childs) 
+            for(let i: number = 1; i < childs.length; i++){
+                childs[i].remove();
+            }
+    }
+
+    dispose(){
+        this.createGameObjectMenu = undefined;
+
+        this.clearSelect();
+        this.gameObjectSelect = undefined;
+
+        this.gameObjectCreateButton?.removeEventListener('click', () => this.onButtonClick?.());
+        this.gameObjectCreateButton = undefined;
     }
 }
