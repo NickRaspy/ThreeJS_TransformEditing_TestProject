@@ -10,6 +10,7 @@ export class Transform {
 
     get position(): THREE.Vector3 { return this._position; }
     get rotation(): THREE.Quaternion { return this._rotation; }
+    //это было добавлено сугубо для UI
     get eulerRotation(): THREE.Euler { return new THREE.Euler().setFromQuaternion(this._rotation); }
     get scale(): THREE.Vector3 { return this._scale; }
 
@@ -58,16 +59,16 @@ export class Transform {
         }
     }
 
-    setOnPositionChanged(callback: (position: THREE.Vector3) => void): void {
-        this.onPositionChanged = callback;
+    setOnPositionChanged(action: (position: THREE.Vector3) => void): void {
+        this.onPositionChanged = action;
     }
 
-    setOnRotationChanged(callback: (rotation: THREE.Quaternion) => void): void {
-        this.onRotationChanged = callback;
+    setOnRotationChanged(action: (rotation: THREE.Quaternion) => void): void {
+        this.onRotationChanged = action;
     }
 
-    setOnScaleChanged(callback: (scale: THREE.Vector3) => void): void {
-        this.onScaleChanged = callback;
+    setOnScaleChanged(action: (scale: THREE.Vector3) => void): void {
+        this.onScaleChanged = action;
     }
 
     dispose(): void {

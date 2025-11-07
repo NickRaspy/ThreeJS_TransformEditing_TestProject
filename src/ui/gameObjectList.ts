@@ -2,9 +2,10 @@ import { DEFAULT_GAME_OBJECT_NAME } from "../other/constValues";
 
 const OBJECT_LIST_ID = 'objects-list';
 const OBJECT_ITEM_ID = 'object-item';
-const UUID_ATTRIBUTE = 'uuid';
 
 export class GameObjectList{
+
+    //undefined поскольку неизвестно, есть ли объект с OBJECT_LIST_ID
     private HTMLObjectList: HTMLElement | undefined;
 
     private objectItems: Map<string, ObjectItem> = new Map<string, ObjectItem>();
@@ -48,6 +49,7 @@ export class GameObjectList{
     }
 }
 
+//выделил отдельно, чтобы проще управлять ивентом и вынести создание li
 class ObjectItem{
     private objectItemElement: HTMLLIElement;
 
@@ -57,7 +59,6 @@ class ObjectItem{
         this.objectItemElement = document.createElement('li');
         this.objectItemElement.textContent = name ? name : DEFAULT_GAME_OBJECT_NAME;
         this.objectItemElement.id = OBJECT_ITEM_ID;
-        this.objectItemElement.setAttribute(UUID_ATTRIBUTE, uuid);
 
         this.event = event;
         this.objectItemElement.addEventListener('click', () => this.event?.());

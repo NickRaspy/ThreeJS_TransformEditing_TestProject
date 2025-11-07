@@ -9,14 +9,13 @@ type TransformValues = 'position' | 'rotation' | 'scale';
 type Axises = 'x' | 'y' | 'z';
 
 export class GameObjectValueEditor {
+
+    //undefined поскольку неизвестно, есть ли объект с EDITBOX_ID
     private editBox: HTMLElement | undefined;
     private objectNameHeader: HTMLElement | undefined;
 
-    private transformInputs: Record<TransformValues, Vector3Input> = {
-        position: new Vector3Input(),
-        rotation: new Vector3Input(),
-        scale: new Vector3Input()
-    };
+    //выглядит дибильно, но так нет проблем с конструктором
+    private transformInputs: Record<TransformValues, Vector3Input> = {} as Record<TransformValues, Vector3Input>;
 
     private currentTransform: Transform | undefined;
 
@@ -31,15 +30,17 @@ export class GameObjectValueEditor {
         const transformInputs = this.editBox.querySelectorAll(`div[${TRANSFORM_VALUE_ATTRIBUTE}]`);
         console.log(transformInputs);
 
+        //кэшируем элементы интерфейса, чтобы не вызывать по триста раз
         transformInputs.forEach(input => {
             const transformValue = input.getAttribute(TRANSFORM_VALUE_ATTRIBUTE) as TransformValues;
-            if(transformValue) this.transformInputs[transformValue].init(input as HTMLElement);
+            if(transformValue) this.transformInputs[transformValue] = new Vector3Input(input as HTMLElement);
         });
 
         const header = document.getElementById(OBJECT_NAME_HEADER_ID);
         if(header) this.objectNameHeader = header;
 
         this.editBox.style.display = 'none';
+
         this.registerListeners();
     }
 
@@ -54,6 +55,7 @@ export class GameObjectValueEditor {
 
         this.currentTransform = transform;
 
+        //окошко становится видимым (делать проверку на значение стиля тупо - лучше так)
         this.editBox.style.display = 'block';
         
         if (this.objectNameHeader) {
@@ -74,6 +76,7 @@ export class GameObjectValueEditor {
             scale:  (x: number, y: number, z: number) => this.currentTransform?.setScale(x, y, z),
         };
 
+        //событие получают ВСЕ инпуты
         Object.entries(this.transformInputs).forEach(([transformValue, vector3Input]) => {
             vector3Input.registerEventsToInputs(() => {
                 const [x, y, z] = this.inputToVector3(transformValue as TransformValues);
@@ -102,11 +105,12 @@ export class GameObjectValueEditor {
 }
 
 class AxisInput {
-    private inputField: HTMLInputElement | undefined;
+    private inputField: HTMLInputElement;
 
+    //чтобы убрать регистрацию события
     private inputAction?: () => void;
     
-    init(inputField: HTMLInputElement): void{
+    constructor(inputField: HTMLInputElement){
         this.inputField = inputField;
     }
 
@@ -118,7 +122,7 @@ class AxisInput {
     }
 
     setValue(value: number): void{
-        if(this.inputField) this.inputField.value = (value ?? 0).toString(); 
+        if(this.inputField) this.inputField.value = value.toString(); 
     }
     getValue(): number {
         if(this.inputField) return parseFloat(this.inputField.value) || 0;
@@ -133,25 +137,19 @@ class AxisInput {
                 this.inputAction = undefined;
             }
         }
-
-        this.inputField = undefined;
     }
 }
 
 class Vector3Input {
-    private vector3Inputs : Record<Axises, AxisInput> ={
-        x: new AxisInput(),
-        y: new AxisInput(),
-        z: new AxisInput()
-    };
+    private vector3Inputs : Record<Axises, AxisInput> = {} as Record<Axises, AxisInput>;
 
-    init(vector3InputsContainer: HTMLElement){
+    constructor(vector3InputsContainer: HTMLElement){
         const inputs = vector3InputsContainer.querySelectorAll(`input[${AXIS_ATTRIBUTE}]`);
 
         inputs.forEach(input => {
             const axis = input.getAttribute(AXIS_ATTRIBUTE) as Axises;
             if(axis) {
-                this.vector3Inputs[axis].init(input as HTMLInputElement);
+                this.vector3Inputs[axis] = new AxisInput(input as HTMLInputElement);
             }
         });
     }

@@ -1,4 +1,6 @@
 import { GameObject } from "./gameObject";
+
+//хранилище объектов, также для упрощения доступа к объектам выполняет действия при добавлении/удалении
 export class ObjectStorage{
     private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
 

@@ -1,3 +1,5 @@
+//скопипастил с three js manual https://threejs.org/manual/#en/cleanup
+
 export class ResourceTracker {
     private resources : Set<any> = new Set();
     track(resource: any) {

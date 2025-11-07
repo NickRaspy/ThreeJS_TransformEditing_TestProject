@@ -6,6 +6,7 @@ export abstract class GameObject{
     abstract readonly name : string;
     transform = new Transform();
 
+    //нужно для хранилища
     get uuid(){
         return this.mesh.uuid;
     }

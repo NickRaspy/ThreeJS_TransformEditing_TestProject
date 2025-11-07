@@ -14,10 +14,13 @@ export class SceneManager {
     constructor(objectsManager: ObjectsManager){
         this.objectsManager = objectsManager;
 
-        objectsManager.objectStorage.onObjectAdded((gameObject) => {
+        //автодобавление сцену при создании
+        this.objectsManager.objectStorage.onObjectAdded((gameObject) => {
             this.scene.add(gameObject.mesh);
         });
-        objectsManager.objectStorage.onObjectRemoved((gameObject) => {
+
+        //и автоудаление
+        this.objectsManager.objectStorage.onObjectRemoved((gameObject) => {
             this.scene.remove(gameObject.mesh);
         });
 

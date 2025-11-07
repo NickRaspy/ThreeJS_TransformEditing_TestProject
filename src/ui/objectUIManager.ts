@@ -4,6 +4,10 @@ import { GameObjectCreateMenu } from "./gameObjectCreateMenu";
 import { GameObjectList } from "./gameObjectList";
 import { GameObjectValueEditor } from "./gameObjectValueEditor";
 
+//P.S: прихожу к выводу, что, наверное, best practice - это создавать UI прям в коде
+//ибо во всех реализациях UI элементов (список, редактор, меню создания) жесткая зависимость от имеющихся элементов в html
+//но все же пока решил не запариваться с этим
+//и все же могу быть не прав
 export class ObjectUIManager{
     private objectsManager : ObjectsManager;
 

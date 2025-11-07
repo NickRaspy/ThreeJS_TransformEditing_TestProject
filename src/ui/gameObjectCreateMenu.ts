@@ -3,6 +3,8 @@ import { ObjectRegistry } from "../objects/objectRegistry";
 const CREATOR_OBJECT_ID = 'create-object';
 
 export class GameObjectCreateMenu{
+
+    //undefined поскольку неизвестно, есть ли объект с CREATOR_OBJECT_ID
     private createGameObjectMenu : HTMLElement | undefined;
     private gameObjectSelect : HTMLSelectElement | undefined;
     private gameObjectCreateButton : HTMLButtonElement | undefined;
@@ -37,7 +39,7 @@ export class GameObjectCreateMenu{
 
     private fillSelect() : void{
         if(!this.gameObjectSelect) return;
-
+        //для упрощения берет сразу же из реестра
         ObjectRegistry.availableObjects.forEach(obj => {
             const option = document.createElement('option');
             option.value = obj;
@@ -51,10 +53,11 @@ export class GameObjectCreateMenu{
         if(!this.gameObjectSelect) return;
 
         const childs = this.gameObjectSelect?.querySelectorAll('option');
-        if (childs) 
+        if (childs){
             for(let i: number = 1; i < childs.length; i++){
                 childs[i].remove();
             }
+        }
     }
 
     dispose(){

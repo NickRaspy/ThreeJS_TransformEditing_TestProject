@@ -1,6 +1,6 @@
 import { GameObject } from "./gameObject";
 
-//регистрация объектов для получения объекта, интегрированного автоматически
+//реестр объектов, чтобы упростить создание новых объектов и инициализации
 export const ObjectRegistry = new class {
     private registeredObjects = new Map<string, new () => GameObject>();
     
@@ -17,6 +17,7 @@ export const ObjectRegistry = new class {
     }
 };
 
+//декоратор
 export function RegisterObject(name: string) {
     return function<T extends GameObject>(constructor: new () => T) {
         ObjectRegistry.register(name, constructor);

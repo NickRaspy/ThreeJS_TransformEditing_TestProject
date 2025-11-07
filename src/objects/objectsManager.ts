@@ -5,6 +5,7 @@ import "./created/objectsCollection";
 import * as THREE from 'three';
 import { ResourceTracker } from "../tools/resourceTracker";
 
+//менеджер объектов (отчасти фабрика, но при этом пользуется отдельной)
 export class ObjectsManager{
     private _objectStorage: ObjectStorage = new ObjectStorage();
 
@@ -27,6 +28,8 @@ export class ObjectsManager{
 
     instantiate(objectType: string): GameObject{
         const newObject = Factory.createObject(objectType);
+
+        //я не видел смысла запариваться с UI для материала, поэтому тупо рандомный цвет + линии, чтобы отличать
         const material = new THREE.MeshBasicMaterial();
         material.color.setRGB(Math.random(), Math.random(), Math.random());
 

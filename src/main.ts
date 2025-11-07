@@ -13,6 +13,8 @@ function init(): void {
     sceneManager = new SceneManager(objectsManager);
     
     window.addEventListener('resize', sceneManager.onWindowResize, false);
+
+    //отгрузка перед выходом из приложения
     window.addEventListener('beforeunload', () =>{
         sceneManager.dispose();
         objectsManager.dispose();
@@ -21,9 +23,6 @@ function init(): void {
 
     animate();
 }
-
-
-
 
 function animate(): void {
     requestAnimationFrame(animate);
