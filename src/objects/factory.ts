@@ -2,8 +2,8 @@ import { GameObject } from "./gameObject";
 import { ObjectRegistry } from "./objectRegistry";
 
 //фабрика
-export class Factory {
-    static createObject(objectType: string): GameObject {
+export class Factory implements IFactory {
+    createObject(objectType: string): GameObject {
         const NewObject = ObjectRegistry.getObject(objectType);
         
         if (!NewObject) {
@@ -12,4 +12,8 @@ export class Factory {
         
         return new NewObject();
     }
+}
+
+export interface IFactory{
+    createObject(objectType: string): GameObject;
 }

@@ -1,3 +1,5 @@
+import { IDisposable } from "../dispose";
+import { GameObject } from "../objects/gameObject";
 import { Transform } from "../objects/transform";
 import { DEFAULT_GAME_OBJECT_NAME } from "../other/constValues";
 
@@ -8,7 +10,7 @@ const AXIS_ATTRIBUTE : string = 'axis';
 type TransformValues = 'position' | 'rotation' | 'scale';
 type Axises = 'x' | 'y' | 'z';
 
-export class GameObjectValueEditor {
+export class GameObjectValueEditor implements IDisposable{
 
     //undefined поскольку неизвестно, есть ли объект с EDITBOX_ID
     private editBox: HTMLElement | undefined;
@@ -17,7 +19,9 @@ export class GameObjectValueEditor {
     //выглядит дибильно, но так нет проблем с конструктором
     private transformInputs: Record<TransformValues, Vector3Input> = {} as Record<TransformValues, Vector3Input>;
 
-    private currentTransform: Transform | undefined;
+    private currentGameObject: GameObject | undefined;
+
+    getCurrentGameObject() : GameObject | undefined { return this.currentGameObject }
 
     constructor() {
         const element = document.getElementById(EDITBOX_ID);
@@ -28,7 +32,6 @@ export class GameObjectValueEditor {
         this.editBox = element;
 
         const transformInputs = this.editBox.querySelectorAll(`div[${TRANSFORM_VALUE_ATTRIBUTE}]`);
-        console.log(transformInputs);
 
         //кэшируем элементы интерфейса, чтобы не вызывать по триста раз
         transformInputs.forEach(input => {
@@ -39,24 +42,33 @@ export class GameObjectValueEditor {
         const header = document.getElementById(OBJECT_NAME_HEADER_ID);
         if(header) this.objectNameHeader = header;
 
-        this.editBox.style.display = 'none';
+        this.toggleVisibility(false);
 
         this.registerListeners();
     }
 
-    setCurrentTransform(objectName: string, transform: Transform): void {
+    clearCurrentGameObject(): void{
+        this.toggleVisibility(false);
+        this.currentGameObject = undefined;
+    }
+
+    toggleVisibility(isVisible: boolean): void{
+        if(this.editBox) this.editBox.style.display = isVisible ? 'block' : 'none';
+    }
+
+    setCurrentTransform(objectName: string, gameObject: GameObject): void {
         if (!this.editBox) return;
 
         const vector3Inputs : Record<TransformValues, [number, number, number]> = {
-            position: [transform.position.x, transform.position.y, transform.position.z],
-            rotation: [transform.eulerRotation.x, transform.eulerRotation.y, transform.eulerRotation.z],
-            scale: [transform.scale.x, transform.scale.y, transform.scale.z],
+            position: [gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z],
+            rotation: [gameObject.transform.eulerRotation.x, gameObject.transform.eulerRotation.y, gameObject.transform.eulerRotation.z],
+            scale: [gameObject.transform.scale.x, gameObject.transform.scale.y, gameObject.transform.scale.z],
         };
 
-        this.currentTransform = transform;
+        this.currentGameObject = gameObject;
 
         //окошко становится видимым (делать проверку на значение стиля тупо - лучше так)
-        this.editBox.style.display = 'block';
+        this.toggleVisibility(true);
         
         if (this.objectNameHeader) {
             this.objectNameHeader.textContent = objectName || DEFAULT_GAME_OBJECT_NAME;
@@ -71,9 +83,9 @@ export class GameObjectValueEditor {
         if (!this.editBox) return;
 
         const actions: Record<TransformValues, (x: number, y: number, z: number) => void> = {
-            position: (x: number, y: number, z: number) => this.currentTransform?.setPosition(x, y, z),
-            rotation:  (x: number, y: number, z: number) => this.currentTransform?.setRotation(x, y, z),
-            scale:  (x: number, y: number, z: number) => this.currentTransform?.setScale(x, y, z),
+            position: (x: number, y: number, z: number) => this.currentGameObject?.transform.setPosition(x, y, z),
+            rotation:  (x: number, y: number, z: number) => this.currentGameObject?.transform.setRotation(x, y, z),
+            scale:  (x: number, y: number, z: number) => this.currentGameObject?.transform.setScale(x, y, z),
         };
 
         //событие получают ВСЕ инпуты
@@ -96,7 +108,8 @@ export class GameObjectValueEditor {
     dispose(): void{
         this.editBox = undefined;
         this.objectNameHeader = undefined;
-        this.currentTransform = undefined;
+
+        this.clearCurrentGameObject();
 
         Object.values(this.transformInputs).forEach((vector3Input) =>{
             vector3Input.dispose();
@@ -117,7 +130,7 @@ class AxisInput {
     registerEventToInput(inputAction: () => void){
         if(this.inputField) {
             this.inputAction = inputAction;
-            this.inputField.addEventListener('input', () => this.inputAction?.());
+            this.inputField.addEventListener('input', this.inputAction);
         }
     }
 
@@ -133,7 +146,7 @@ class AxisInput {
         if(this.inputField){
             this.inputField.value = '';
             if(this.inputAction) {
-                this.inputField.removeEventListener('input', () => this.inputAction?.());
+                this.inputField.removeEventListener('input', this.inputAction);
                 this.inputAction = undefined;
             }
         }

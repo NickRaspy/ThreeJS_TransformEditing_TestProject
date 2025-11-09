@@ -1,6 +1,8 @@
 //скопипастил с three js manual https://threejs.org/manual/#en/cleanup
 
-export class ResourceTracker {
+import { IDisposable } from "../dispose";
+
+class ResourceTracker implements IDisposable{
     private resources : Set<any> = new Set();
     track(resource: any) {
         if (resource.dispose) {
@@ -18,3 +20,5 @@ export class ResourceTracker {
         this.resources.clear();
     }
 }
+
+export const resourceTracker = new ResourceTracker();

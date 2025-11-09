@@ -29,29 +29,65 @@ body {
 #objects-list {
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 10px 0 0 0;
     flex-grow: 1;
     overflow-y: auto;
-    padding-right: 5px;
+    padding-right: 10px;
 }
 
 #object-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 10px;
-    background: #fff;
+    padding: 0;
     cursor: pointer;
     margin-bottom: 10px;
     border-radius: 10px;
+    height: 30px;
 }
 
-#object-item:hover {
+#object-item #object-item-text {
+    background: #fff;
+    flex: 0 0 75%;
+    border-radius: 10px 0 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 100%;
+    box-sizing: border-box;
+    margin-right: 2.5px;
+}
+
+#object-item #object-delete-button {
+    background: #fff;
+    flex: 0 0 25%;
+    border: none;
+    cursor: pointer;
+    border-radius: 0 10px 10px 0;
+    height: 100%;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2.5px;
+}
+
+#object-item #object-item-text:hover {
     background-color: #f0f0f0;
 }
 
-#object-item:last-child {
-    border-bottom: none;
+#object-item #object-delete-button:hover {
+    background-color: #f0f0f0;
+}
+
+#object-item #object-delete-button img {
+    max-width: 16px;
+    max-height: 16px;
+    width: auto;
+    height: auto;
 }
 
 .object-type {

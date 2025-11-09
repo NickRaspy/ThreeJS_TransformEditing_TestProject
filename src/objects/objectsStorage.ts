@@ -1,7 +1,8 @@
+import { IDisposable } from "../dispose";
 import { GameObject } from "./gameObject";
 
 //хранилище объектов, также для упрощения доступа к объектам выполняет действия при добавлении/удалении
-export class ObjectStorage{
+export class ObjectStorage implements IObjectStorage, IDisposable{
     private gameObjects: Map<string, GameObject> = new Map<string, GameObject>();
 
     private onObjectAddedCallbacks: ((gameObject: GameObject) => void)[] = [];
@@ -48,4 +49,13 @@ export class ObjectStorage{
         this.onObjectAddedCallbacks = [];
         this.onObjectRemovedCallbacks = [];
     }
+}
+
+export interface IObjectStorage extends IDisposable{
+    addObject(newObject: GameObject): void;
+    getObject(uuid: string): GameObject | null;
+    getObjects(): Array<GameObject>;
+    removeObject(uuid: string): void;
+    onObjectAdded(action: (gameObject: GameObject) => void): void;
+    onObjectRemoved(action: (gameObject: GameObject) => void): void;
 }

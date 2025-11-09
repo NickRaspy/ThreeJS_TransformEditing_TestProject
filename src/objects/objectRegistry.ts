@@ -1,7 +1,8 @@
+import { IDisposable } from "../dispose";
 import { GameObject } from "./gameObject";
 
 //реестр объектов, чтобы упростить создание новых объектов и инициализации
-export const ObjectRegistry = new class {
+export const ObjectRegistry = new class implements IDisposable {
     private registeredObjects = new Map<string, new () => GameObject>();
     
     register(name: string, gameObject: new () => GameObject) {
@@ -14,6 +15,10 @@ export const ObjectRegistry = new class {
     
     get availableObjects(): string[] {
         return Array.from(this.registeredObjects.keys());
+    }
+
+    dispose(): void {
+        this.registeredObjects.clear();
     }
 };
 

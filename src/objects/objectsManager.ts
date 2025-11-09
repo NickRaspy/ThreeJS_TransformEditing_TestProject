@@ -1,47 +1,52 @@
 import { GameObject } from "./gameObject";
-import {Factory} from "./factory"
-import { ObjectStorage} from "./objectsStorage"
+import { IFactory } from "./factory"
+import { IObjectStorage, ObjectStorage} from "./objectsStorage"
 import "./created/objectsCollection";
 import * as THREE from 'three';
-import { ResourceTracker } from "../tools/resourceTracker";
+import { resourceTracker } from "../tools/resourceTracker";
+import { IDisposable } from "../dispose";
 
 //менеджер объектов (отчасти фабрика, но при этом пользуется отдельной)
-export class ObjectsManager{
-    private _objectStorage: ObjectStorage = new ObjectStorage();
-
-    private resourceTracker: ResourceTracker = new ResourceTracker();
-
-    get objectStorage(): ObjectStorage {
+export class ObjectsManager implements IDisposable{
+    
+    get objectStorage(): IObjectStorage {
         return this._objectStorage;
     }
 
-    constructor(){
+    constructor(private factory: IFactory, private _objectStorage: IObjectStorage ){
         this._objectStorage.onObjectAdded((gameObject) => {
-            this.resourceTracker.track(gameObject.mesh.geometry);
-            this.resourceTracker.track(gameObject.mesh.material);
+            resourceTracker.track(gameObject.mesh.geometry);
+            resourceTracker.track(gameObject.mesh.material);
         });
-        this._objectStorage.onObjectAdded((gameObject) => {
-            this.resourceTracker.untrack(gameObject.mesh.geometry);
-            this.resourceTracker.untrack(gameObject.mesh.material);
+        this._objectStorage.onObjectRemoved((gameObject) => {
+            resourceTracker.untrack(gameObject.mesh.geometry);
+            resourceTracker.untrack(gameObject.mesh.material);
         });
     }
 
     instantiate(objectType: string): GameObject{
-        const newObject = Factory.createObject(objectType);
+        const newObject = this.factory.createObject(objectType);
 
-        //я не видел смысла запариваться с UI для материала, поэтому тупо рандомный цвет + линии, чтобы отличать
-        const material = new THREE.MeshBasicMaterial();
-        material.color.setRGB(Math.random(), Math.random(), Math.random());
+        //я не видел смысла сейчас запариваться с UI для материала, поэтому тупо рандомный цвет + линии, чтобы отличать
+        newObject.mesh.add(this.setWires(newObject.mesh.geometry));
+        newObject.mesh.material = this.setMaterial();
 
-        var wiresGeometry = new THREE.EdgesGeometry( newObject.mesh.geometry );
-        var wiresMaterial = new THREE.LineBasicMaterial( { color: 0x000000 } );
-        var wires = new THREE.LineSegments( wiresGeometry, wiresMaterial );
-        newObject.mesh.add(wires);
-
-        newObject.mesh.material = material;
         this._objectStorage.addObject(newObject);
 
         return newObject;
+    }
+
+    setMaterial(): THREE.Material{
+        const material = new THREE.MeshBasicMaterial();
+        material.color.setRGB(Math.random(), Math.random(), Math.random());
+        return material;
+    }
+
+    setWires(geometry: THREE.BufferGeometry): THREE.LineSegments{
+        var wiresGeometry = new THREE.EdgesGeometry( geometry );
+        var wiresMaterial = new THREE.LineBasicMaterial( { color: 0x000000 } );
+        var wires = new THREE.LineSegments( wiresGeometry, wiresMaterial );
+        return wires;
     }
 
     destroy(uuid: string){
@@ -49,7 +54,6 @@ export class ObjectsManager{
     }
 
     dispose(): void{
-        this.resourceTracker.dispose();
         this._objectStorage.dispose();
     }
 }

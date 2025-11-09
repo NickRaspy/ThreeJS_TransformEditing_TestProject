@@ -1,15 +1,14 @@
 import * as THREE from 'three';
 import { ObjectsManager } from '../objects/objectsManager';
-import { ResourceTracker } from '../tools/resourceTracker';
+import { resourceTracker } from '../tools/resourceTracker';
+import { IDisposable } from '../dispose';
 
-export class SceneManager {
+export class SceneManager implements IDisposable{
     private objectsManager: ObjectsManager;
 
     private scene: THREE.Scene;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
-
-    private resourceTracker: ResourceTracker = new ResourceTracker();
 
     constructor(objectsManager: ObjectsManager){
         this.objectsManager = objectsManager;
@@ -38,7 +37,7 @@ export class SceneManager {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
-        this.resourceTracker.track(this.renderer);
+        resourceTracker.track(this.renderer);
     
         this.camera.position.z = 10;
     }

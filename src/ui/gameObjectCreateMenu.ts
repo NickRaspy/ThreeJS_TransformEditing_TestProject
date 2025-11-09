@@ -1,8 +1,9 @@
+import { IDisposable } from "../dispose";
 import { ObjectRegistry } from "../objects/objectRegistry";
 
 const CREATOR_OBJECT_ID = 'create-object';
 
-export class GameObjectCreateMenu{
+export class GameObjectCreateMenu implements IDisposable{
 
     //undefined поскольку неизвестно, есть ли объект с CREATOR_OBJECT_ID
     private createGameObjectMenu : HTMLElement | undefined;
@@ -29,9 +30,7 @@ export class GameObjectCreateMenu{
         const button = this.createGameObjectMenu.querySelector('button');
         if(button) {
             this.gameObjectCreateButton = button;
-            button.addEventListener('click', () => {
-                this.onButtonClick?.();
-            });
+            button.addEventListener('click', this.onButtonClick);
         }
 
         this.fillSelect();
@@ -66,7 +65,9 @@ export class GameObjectCreateMenu{
         this.clearSelect();
         this.gameObjectSelect = undefined;
 
-        this.gameObjectCreateButton?.removeEventListener('click', () => this.onButtonClick?.());
+        if(this.onButtonClick && this.gameObjectCreateButton) 
+            this.gameObjectCreateButton.removeEventListener('click', this.onButtonClick);
+        
         this.gameObjectCreateButton = undefined;
     }
 }

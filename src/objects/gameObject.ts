@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { Transform } from './transform';
+import { IDisposable } from '../dispose';
 
-export abstract class GameObject{
+export abstract class GameObject implements IDisposable{
     abstract mesh : THREE.Mesh;
     abstract readonly name : string;
     transform = new Transform();

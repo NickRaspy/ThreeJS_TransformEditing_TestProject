@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-export class Transform {
+import { IDisposable } from '../dispose';
+export class Transform implements IDisposable{
     private _position = new THREE.Vector3(0, 0, 0);
     private _rotation = new THREE.Quaternion(0, 0, 0, 1);
     private _scale = new THREE.Vector3(1, 1, 1);
