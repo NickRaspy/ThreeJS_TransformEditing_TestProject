@@ -9,19 +9,24 @@ function processDirectory(dir) {
     const fullPath = join(dir, item.name);
     if (item.isDirectory()) {
       processDirectory(fullPath);
-    } 
-    else if (item.isFile() && item.name.endsWith('.js')) {
+    } else if (item.isFile() && item.name.endsWith('.js')) {
       let content = readFileSync(fullPath, 'utf8');
-      
-      content = content.replace(
-        /import\s+(['"])(.+?)\1;/g,
-        (match, quote, path) => `import ${quote}${path}.js${quote};`
-      );
 
-      content = content.replace(
-        /from\s+(['"])(.+?)\1;/g,
-        (match, quote, path) => `from ${quote}${path}.js${quote};`
-      );
+      const shouldAppend = path => {
+        if (!path) return false;
+        if (!path.startsWith('.') && !path.startsWith('/')) return false;
+        return !/\.[^\/\\]+$/.test(path);
+      };
+
+      content = content.replace(/import\s+(['"])(.+?)\1;/g, (match, quote, path) => {
+        if (!shouldAppend(path)) return match;
+        return `import ${quote}${path}.js${quote};`;
+      });
+
+      content = content.replace(/from\s+(['"])(.+?)\1/g, (match, quote, path) => {
+        if (!shouldAppend(path)) return match;
+        return `from ${quote}${path}.js${quote}`;
+      });
 
       writeFileSync(fullPath, content);
     }

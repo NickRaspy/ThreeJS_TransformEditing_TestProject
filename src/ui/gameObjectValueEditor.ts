@@ -2,13 +2,12 @@ import { IDisposable } from "../dispose";
 import { GameObject } from "../objects/gameObject";
 import { Transform } from "../objects/transform";
 import { DEFAULT_GAME_OBJECT_NAME } from "../other/constValues";
+import { Axises, TransformValues } from "../other/types";
 
 const EDITBOX_ID: string = 'edit-box';
 const OBJECT_NAME_HEADER_ID: string = 'object-name';
 const TRANSFORM_VALUE_ATTRIBUTE : string = 'transformValue';
 const AXIS_ATTRIBUTE : string = 'axis';
-type TransformValues = 'position' | 'rotation' | 'scale';
-type Axises = 'x' | 'y' | 'z';
 
 export class GameObjectValueEditor implements IDisposable{
 

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rd /s /q dist && tsc && node fix-imports.js",
     "dev": "tsc --watch",
-    "start": "npm run build && live-server"
+    "start": "live-server",
+    "start_with_build": "npm run build && live-server"
   },
   "keywords": [],
   "author": "",

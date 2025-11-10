@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { ObjectsManager } from '../objects/objectsManager';
 import { resourceTracker } from '../tools/resourceTracker';
 import { IDisposable } from '../dispose';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import {Vector3Arrows} from "../tools/arrows";
 
 export class SceneManager implements IDisposable{
     private objectsManager: ObjectsManager;
@@ -9,6 +11,10 @@ export class SceneManager implements IDisposable{
     private scene: THREE.Scene;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
+
+    private controls: OrbitControls | undefined;
+
+    private onDispose : (() => void)[] = [];
 
     constructor(objectsManager: ObjectsManager){
         this.objectsManager = objectsManager;
@@ -38,8 +44,21 @@ export class SceneManager implements IDisposable{
         document.body.appendChild(this.renderer.domElement);
 
         resourceTracker.track(this.renderer);
-    
+
+        //вращалка камеры
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+
+        Vector3Arrows.getArrows().forEach((arrow) => {
+            this.scene.add( arrow );
+            this.onDispose.push(() => this.scene.remove(arrow));
+        });
         this.camera.position.z = 10;
+    }
+
+    update(): void{
+        this.render();
+        this.controls?.update();
     }
 
     render(): void{
@@ -48,6 +67,11 @@ export class SceneManager implements IDisposable{
 
     dispose(): void{
         this.renderer.dispose();
+        this.controls?.dispose();
+        if(this.onDispose){
+            this.onDispose.forEach((action) => action());
+            this.onDispose = [];
+        }
     }
     onWindowResize(): void {
         if (this.camera && this.renderer){

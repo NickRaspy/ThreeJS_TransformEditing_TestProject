@@ -43,9 +43,9 @@ export class ObjectsManager implements IDisposable{
     }
 
     setWires(geometry: THREE.BufferGeometry): THREE.LineSegments{
-        var wiresGeometry = new THREE.EdgesGeometry( geometry );
-        var wiresMaterial = new THREE.LineBasicMaterial( { color: 0x000000 } );
-        var wires = new THREE.LineSegments( wiresGeometry, wiresMaterial );
+        const wiresGeometry = new THREE.EdgesGeometry( geometry );
+        const wiresMaterial = new THREE.LineBasicMaterial( { color: 0x000000 } );
+        const wires = new THREE.LineSegments( wiresGeometry, wiresMaterial );
         return wires;
     }
 

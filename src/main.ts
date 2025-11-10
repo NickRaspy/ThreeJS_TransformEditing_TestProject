@@ -33,7 +33,7 @@ function init(): void {
 function animate(): void {
     requestAnimationFrame(animate);
 
-    sceneManager.render();
+    sceneManager.update();
 }
 
 window.addEventListener('DOMContentLoaded', init);

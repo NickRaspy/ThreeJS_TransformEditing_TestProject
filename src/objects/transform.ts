@@ -44,7 +44,11 @@ export class Transform implements IDisposable{
     }
 
     setRotation(x: number, y: number, z: number): void {
-        const euler = new THREE.Euler(x, y, z);
+        const euler = new THREE.Euler(
+            THREE.MathUtils.degToRad(x),
+            THREE.MathUtils.degToRad(y),
+            THREE.MathUtils.degToRad(z)
+        );
 
         this._rotation.setFromEuler(euler);
 

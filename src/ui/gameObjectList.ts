@@ -1,5 +1,6 @@
 import { IDisposable } from "../dispose";
 import { DEFAULT_GAME_OBJECT_NAME } from "../other/constValues";
+import { createHTMLElementFromString } from "../tools/htmlElementFromString";
 
 const OBJECT_LIST_ID = 'objects-list';
 const OBJECT_ITEM_ID = 'object-item';
@@ -28,6 +29,8 @@ export class GameObjectList implements IDisposable{
 
     private defaultObjectItemElement: HTMLElement | undefined;
 
+    private currentObjectItemSelected: ObjectItem | undefined;
+
     //была мысль все же вынести удаление отдельно, но решил, что пока и так норм, тем более опционально
     private onRemove?: (uuid: string) => void;
 
@@ -49,14 +52,12 @@ export class GameObjectList implements IDisposable{
             this.defaultObjectItemElement = firstElement;
         }
         else{
-            if(this.HTMLObjectList instanceof HTMLUListElement){
-                this.defaultObjectItemElement = document.createElement('li');
-                this.defaultObjectItemElement.innerHTML = DEFAULT_LI_GAMEOBJECT_ITEM_ELEMENT;
-            }
-            else{
-                this.defaultObjectItemElement = document.createElement('div');
-                this.defaultObjectItemElement.innerHTML = DEFAULT_DIV_GAMEOBJECT_ITEM_ELEMENT;
-            }
+            this.defaultObjectItemElement = createHTMLElementFromString(
+                this.HTMLObjectList instanceof HTMLUListElement ? 
+                DEFAULT_LI_GAMEOBJECT_ITEM_ELEMENT 
+                : 
+                DEFAULT_DIV_GAMEOBJECT_ITEM_ELEMENT
+            );
         }
 
         if(onRemove) this.onRemove = onRemove;
@@ -64,7 +65,18 @@ export class GameObjectList implements IDisposable{
 
     add(uuid: string, name: string, objectItemClickAction: () => void) : void{
         if(this.HTMLObjectList && this.defaultObjectItemElement){
-            const objectItem: ObjectItem = new ObjectItem(this.defaultObjectItemElement, name, objectItemClickAction, () => this.onRemove?.(uuid));
+            const objectItem: ObjectItem = new ObjectItem(
+                this.defaultObjectItemElement, 
+                name, 
+                () => {
+                    objectItemClickAction();
+                    if(this.currentObjectItemSelected) this.currentObjectItemSelected.toggleSelectClickable(true);
+
+                    this.currentObjectItemSelected = objectItem;
+                    this.currentObjectItemSelected.toggleSelectClickable(false);
+                    ;}, 
+                () => this.onRemove?.(uuid)
+            );
             
             const objectItemElement = objectItem.getElement();
             if(objectItemElement) this.HTMLObjectList.appendChild(objectItemElement);
@@ -127,6 +139,13 @@ class ObjectItem{
         }
 
         this.objectItemElement.removeAttribute('style');
+    }
+
+    toggleSelectClickable(isClickable : boolean): void{
+        if(this.textElement){
+            this.textElement.style.pointerEvents = isClickable ? 'auto' : 'none';
+            this.textElement.style.background = isClickable ? '#fff' : '#696969';
+        }
     }
 
     getElement(): HTMLElement | undefined{
