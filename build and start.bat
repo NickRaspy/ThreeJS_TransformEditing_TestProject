@@ -1,0 +1,1 @@
+npm run start_with_build
